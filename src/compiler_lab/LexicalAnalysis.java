@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class LexicalAnalysis {
 
-	static String keywords[] = {"bool", "char", "int", "long", "float", "double", "void", "return", "if", "else", "while", "do", "for", "goto","break", "switch", "case", "cin", "cout", "main"};
+	static String keywords[] = {"bool", "char", "int", "long", "float", "double", "void", "return", "if", "else", "while", "do", "for", "goto","break", "switch", "case", "cin", "cout"};
 	
 	static String operators[] = {"+", "-", "*", "/", "%", "++", "--", "=", "+=", "-=", "*=", "/=", "==", "!=", ">", "<", ">=", "<=", "&&", "||","!", "&", "|", "^", "~", "<<", ">>"};
 	

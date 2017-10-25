@@ -1,19 +1,9 @@
 int main ( )
+main ( )
 {
+//int d , a , b, sum,c == 0 ;
+sum = a + b ;
 
-	int a , b ;
-	
-	a = a + b ;
-
-	double rahad = 101.23 , nadira , mredul , sumit , arif ;
-
-	for ( int i = 0 ; i < 10 ; i++ )
-	{
-
-		printf ( "%d", i + a ) ;
-		i++ ;
-	}
-
-	return 0;
-
+b += c ;
+return 0;
 }

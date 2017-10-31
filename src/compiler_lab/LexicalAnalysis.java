@@ -13,7 +13,9 @@ public class LexicalAnalysis {
 	
 	static String operators[] = {"+", "-", "*", "/", "%", "++", "--", "=", "+=", "-=", "*=", "/=", "==", "!=", ">", "<", ">=", "<=", "&&", "||","!", "&", "|", "^", "~", "<<", ">>"};
 	
-	static String symbols[] = {"(", ")", "{", "}", ";"};
+	static String single_operators[] = {"+", "-", "*", "/", "%", "=", ">", "<","!", "&", "|", "^", "~", ";"};
+	
+	static String symbols[] = {",","(", ")", "{", "}", ";"};
 	
 	 static String lexems[] ;
 	
@@ -21,6 +23,7 @@ public class LexicalAnalysis {
 	
 	
 	static ArrayList<String> symTable = new ArrayList<String>();
+	//ArrayList<char> ch = new ArrayList<char>();
 	
 	static Set<String> kes = new HashSet<String>();
 	static Set<String> ops = new HashSet<String>();
@@ -41,11 +44,22 @@ public class LexicalAnalysis {
 		while(sc.hasNextLine())
 		{
 			rawCode = sc.nextLine();
-			lexems = rawCode.split("\\s+|\\,|\\; ");
+			//lexems = rawCode.split("\\s+|\\,|\\; ");
+			
+			if(rawCode.indexOf("//") != -1)
+			{
+				
+				rawCode = rawCode.substring(0, rawCode.indexOf("//"));
+			}
+			lexems = split(rawCode);	
 			
 			
 			for(String st : lexems)
 			{
+				
+				if(isBlank(st))
+					continue;
+				
 				if(checkSymbol(st))
 				{
 					sym.add(st);
@@ -58,6 +72,7 @@ public class LexicalAnalysis {
 					ops.add(st);
 				}else if(isNumeric(st))
 				{
+					//System.out.println(st );
 					num.add(st);
 				}else if(isValidJavaIdentifier(st))
 				{
@@ -80,6 +95,8 @@ public class LexicalAnalysis {
 			System.out.format("|------%s-----------ID----%d---|\n",symTable.get(i),  i);
 		}
 		
+		//split("{");
+		
 		//lexems = rawCode.split("\\s+");
 		
 		//System.out.println("------------Identifiers---------\n");
@@ -88,16 +105,12 @@ public class LexicalAnalysis {
 		//showAll(sym);
 		//System.out.println("------------Keywords---------\n");
 		//showAll(kes);
-		//System.out.println("------------Numbers---------\n");
-		//showAll(num);
+		System.out.println("------------Numbers---------\n");
+		showAll(num);
 		//System.out.println("------------Operators---------\n");
 		//showAll(ops);
 		
-		
-		
-		
 	}
-	
 	public static void showAll(Set<String> set)
 	{
 		System.out.println("------------------------------------\n");
@@ -114,24 +127,6 @@ public class LexicalAnalysis {
 	
 	public static int pointer_table_entry( String str)
 	{
-		
-		
-		/*
-		for(String se : iden)
-		{
-			//System.out.println(se);
-			
-			
-			if(se.equals(str))
-			{
-				//System.out.println(se);
-				return pointer;
-			}
-			pointer++;
-			
-		}
-		*/
-		
 		
 		int j = symTable.size();
 		for(int i = 0; i < j ; i++)
@@ -155,7 +150,9 @@ public class LexicalAnalysis {
 		  {  
 		    return false;  
 		  }  
-		  return true;  
+		  return true;
+		  
+		  //return str.matches("-?\\d+(\\.\\d+)?");
 	}
 	
 	public static boolean checkKeyword(String str)
@@ -200,8 +197,14 @@ public class LexicalAnalysis {
 					System.out.println(str+ "\t\toperator\t\tdecrement and assign");
 				else if(s.equals("*="))
 					System.out.println(str+ "\t\toperator\t\tmultiply and assign");
-				else if(s.equals("/="))
-					System.out.println(str+ "\t\toperator\t\tdivision and assign");
+				else if(s.equals(">"))
+					System.out.println(str+ "\t\toperator\t\tgreater than");
+				else if(s.equals("<"))
+					System.out.println(str+ "\t\toperator\t\tless than");
+				else if(s.equals("&&"))
+					System.out.println(str+ "\t\toperator\t\tAND");
+				else if(s.equals("||"))
+					System.out.println(str+ "\t\toperator\t\tOR");
 				return true;
 			}
 				
@@ -223,13 +226,38 @@ public class LexicalAnalysis {
 					System.out.println(str+ "\t\tspecial symbol\t\tleft curly braces");
 				else  if(s.equals("}"))
 					System.out.println(str+ "\t\tspecial symbol\t\tright curly braces");
-				
+				else if(s.equals(","))
+					System.out.println(str+ "\t\tspecial symbol\t\tcomma");
+				else if(s.equals(";"))
+					System.out.println(str+ "\t\tspecial symbol\t\tsemi-colon");
 				
 				
 				return true;
 			}
 				
 		}
+		return false;
+	}
+	
+	public static boolean is_double_operator(String s)
+	{
+		//System.out.println(s+ "from is double");
+		if(s.equals("==") || s.equals("+=") ||s.equals("-=") ||s.equals("*=") ||s.equals("/=") ||s.equals("++") ||s.equals("--"))
+		{
+			
+			return true;
+		}
+			
+		
+		return false;
+	}
+	
+	public static boolean is_single_operator(char c)
+	{
+		String st = String.valueOf(c);
+		for(int i = 0 ; i < single_operators.length ; i++)
+			if(single_operators[i].equals(st))
+				return true;
 		return false;
 	}
 	
@@ -250,10 +278,123 @@ public class LexicalAnalysis {
 	    }
 	    
 	    return true;
+	}
 	
+	    public static String[] split(String st){
+			
+			//String st = "float m =(float)(y2-y1)/x2-x1 ";
+	    	st = "if(sum>b)";
+			
+		    ArrayList<Character> str=new ArrayList<Character>();
+		    String myStrings[] = new String[30];
+		    char ch, last_char = ',';
+		    int pointer=0;
+			for(int i=0; i < st.length() ; i++){
+				
+				ch=st.charAt(i);
+				//System.out.println(ch + " " +is_separator(ch) );
+				if(!is_separator(ch)){
+					str.add(ch);
+					
+				}
+				else{
+					
+					if(!str.isEmpty()) {
+						myStrings[++pointer]=getStringRepresentation(str);
+						str.clear();
+					}
+						if( (i + 1) < st.length() )
+						{
+							String a = String.valueOf(ch);
+							a = a.concat(String.valueOf(st.charAt(i+1)));
+							
+							
+							if(is_double_operator(a))
+							{
+								//System.out.println("From double"+i);
+								myStrings[++pointer]=a;
+								i = i + 1;
+							}else if(is_single_operator(ch))
+							{
+								//System.out.println("From single"+i);
+								myStrings[++pointer]=String.valueOf(ch);
+							}
+							else
+							{
+								//System.out.println("From else"+ch+i);
+								myStrings[++pointer]=String.valueOf(ch);
+									
+								//pointer++;
+							}
+						}
+						
+						
+					
+				}
+				
+				if(st.length() - 1 == i)
+				last_char = ch;
+				
+				
+			}
+			if(!str.isEmpty()) {
+				myStrings[++pointer]=getStringRepresentation(str);
+				str.clear();
+			}else
+				myStrings[++pointer]=String.valueOf(last_char);
+	
+				
+				
+			
+			for(int i = 0 ; i <= pointer ; i++)
+			{
+				System.out.println(i+myStrings[i]);
+			}
+			
+			return myStrings;
+		}
+		
+		public static String getStringRepresentation(ArrayList<Character> list)
+		{    
+		    StringBuilder builder = new StringBuilder(list.size());
+		    for(Character ch: list)
+		    {
+		        builder.append(ch);
+		    }
+		    return builder.toString();
+		}
+		
+		public static Boolean is_separator(char ch){
+			if(ch==','||ch==';'||ch=='/'||ch=='+'||ch=='-'||ch=='*' ){
+				 return true;
+			}
+			
+			else if(ch=='('||ch==')'||ch=='{'||ch=='}'||ch=='['){
+				
+				 return true;
+			}
+			else if(ch==']'||ch=='#'||ch=='\\'||ch=='"'||ch=='<'||ch=='>' || ch == '='){
+				
+				 return true;
+			}else if(Character.isWhitespace(ch))
+				return true;
+			
+			     return false;
+			
+		}
+		
+		public static boolean isBlank(String string) {
+	        if (string == null || string.length() == 0)
+	            return true;
 
+	        int l = string.length();
+	        for (int i = 0; i < l; i++) {
+	            if (! Character.isWhitespace(string.charAt(i)) )
+	                return false;
+	        }
+	        return true;
+	    } 
 	
-	
-}	
+		
 	
 }	

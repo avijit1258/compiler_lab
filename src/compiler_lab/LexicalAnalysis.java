@@ -283,7 +283,7 @@ public class LexicalAnalysis {
 	    public static String[] split(String st){
 			
 			//String st = "float m =(float)(y2-y1)/x2-x1 ";
-	    	st = "if(sum>b)";
+	    	//st = "if(sum>b)";
 			
 		    ArrayList<Character> str=new ArrayList<Character>();
 		    String myStrings[] = new String[30];
@@ -348,7 +348,7 @@ public class LexicalAnalysis {
 			
 			for(int i = 0 ; i <= pointer ; i++)
 			{
-				System.out.println(i+myStrings[i]);
+				//System.out.println(i+myStrings[i]);
 			}
 			
 			return myStrings;
